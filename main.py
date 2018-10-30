@@ -9,27 +9,13 @@ from core.open_usecase import OpenUsecase
 from gateway.door_gateway import DoorGateway
 from login.login_handler import LoginHandler
 from logout.logout_handler import LogoutHandler
+from main.main_handler import MainHandler
 from open.open_handler import OpenHandler
-
-
-class MainHandler(tornado.web.RequestHandler):
-    def initialize(self, baseurl):
-        self.baseurl = baseurl
-
-    def get_current_user(self):
-        return self.get_secure_cookie("pin")
-
-    def get(self):
-        if not self.current_user:
-            self.redirect("{}/login".format(self.baseurl))
-            return
-
-        self.redirect("{}/open".format(self.baseurl))
 
 
 def make_app(baseurl, secret, pins, gpiopin, duration):
     return tornado.web.Application([
-        (r"/", MainHandler, dict(baseurl=baseurl)),
+        (r"/", MainHandler, dict(baseurl=baseurl, check_pin_usecase=CheckPinUsecase(pins))),
         (r"/login", LoginHandler, dict(baseurl=baseurl, check_pin_usecase=CheckPinUsecase(pins))),
         (r"/open", OpenHandler, dict(baseurl=baseurl, open_usecase=OpenUsecase(DoorGateway(gpiopin, duration)))),
         (r"/logout", LogoutHandler, dict(baseurl=baseurl)),
