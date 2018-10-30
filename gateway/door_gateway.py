@@ -1,14 +1,16 @@
+from pprint import pprint
+
 from gpiozero import LED
 from time import sleep
 
 
 class DoorGateway:
     def __init__(self, gpiopin, duration):
-        self.gpiopin = gpiopin
         self.duration = duration
+        self.led = LED(gpiopin)
+        self.led.on()
 
     def open(self):
-        led = LED(self.gpiopin)
-        led.on()
+        self.led.off()
         sleep(self.duration)
-        led.off()
+        self.led.on()
