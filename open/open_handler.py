@@ -14,7 +14,7 @@ class OpenHandler(tornado.web.RequestHandler):
             self.redirect("{}/login".format(self.baseurl))
             return
 
-        self.render("open.html", title="Pi Doorman")
+        self.render("open.html", title="Pi Doorman", baseurl=self.baseurl)
 
     def post(self):
         if not self.current_user:

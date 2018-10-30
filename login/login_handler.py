@@ -7,7 +7,7 @@ class LoginHandler(tornado.web.RequestHandler):
         self.check_pin_usecase = check_pin_usecase
 
     def get(self):
-        self.render("login.html", title="Pi Doorman")
+        self.render("login.html", title="Pi Doorman", baseurl=self.baseurl)
 
     def post(self):
         if self.check_pin_usecase.execute(self.get_argument("pin")):
