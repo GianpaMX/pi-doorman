@@ -14,5 +14,5 @@ class LoginHandler(tornado.web.RequestHandler):
             self.set_secure_cookie("pin", self.get_argument("pin"))
             self.redirect("{}/".format(self.baseurl))
         else:
-            self.set_secure_cookie("pin", None)
+            self.clear_cookie("pin")
             self.redirect("{}/login".format(self.baseurl))
