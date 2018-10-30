@@ -14,11 +14,24 @@ from open.open_handler import OpenHandler
 
 
 def make_app(baseurl, secret, pins, gpiopin, duration):
+    door_gateway = DoorGateway(gpiopin, duration)
+
+    check_pin_usecase = CheckPinUsecase(pins)
+    open_usecase = OpenUsecase(pins, door_gateway)
+
     return tornado.web.Application([
-        (r"/", MainHandler, dict(baseurl=baseurl, check_pin_usecase=CheckPinUsecase(pins))),
-        (r"/login", LoginHandler, dict(baseurl=baseurl, check_pin_usecase=CheckPinUsecase(pins))),
-        (r"/open", OpenHandler, dict(baseurl=baseurl, open_usecase=OpenUsecase(DoorGateway(gpiopin, duration)))),
-        (r"/logout", LogoutHandler, dict(baseurl=baseurl)),
+        (r"/", MainHandler, dict(
+            baseurl=baseurl,
+            check_pin_usecase=check_pin_usecase)),
+        (r"/login", LoginHandler, dict(
+            baseurl=baseurl,
+            check_pin_usecase=check_pin_usecase)),
+        (r"/open", OpenHandler, dict(
+            baseurl=baseurl,
+            open_usecase=open_usecase,
+            check_pin_usecase=check_pin_usecase)),
+        (r"/logout", LogoutHandler, dict(
+            baseurl=baseurl)),
     ], cookie_secret=secret)
 
 

@@ -1,5 +1,3 @@
-from pprint import pprint
-
 from gpiozero import LED
 from time import sleep
 
