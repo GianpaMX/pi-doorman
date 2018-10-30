@@ -35,7 +35,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("-c", "--config",
                         dest="config",
-                        default="/etc/doorman.conf")
+                        default="/etc/pi-doorman.conf")
 
     args = parser.parse_args()
 
