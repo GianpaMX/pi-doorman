@@ -16,5 +16,9 @@ class OpenHandler(tornado.web.RequestHandler):
         self.render("open.html", title="Pi Doorman")
 
     def post(self):
+        if not self.current_user:
+            self.redirect("/login")
+            return
+
         self.open_usecase.execute()
         self.redirect("/open")
