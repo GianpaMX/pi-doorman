@@ -8,6 +8,7 @@ from core.check_pin_usecase import CheckPinUsecase
 from core.open_usecase import OpenUsecase
 from gateway.door_gateway import DoorGateway
 from login.login_handler import LoginHandler
+from logout.logout_handler import LogoutHandler
 from open.open_handler import OpenHandler
 
 
@@ -31,6 +32,7 @@ def make_app(baseurl, secret, pins, gpiopin, duration):
         (r"/", MainHandler, dict(baseurl=baseurl)),
         (r"/login", LoginHandler, dict(baseurl=baseurl, check_pin_usecase=CheckPinUsecase(pins))),
         (r"/open", OpenHandler, dict(baseurl=baseurl, open_usecase=OpenUsecase(DoorGateway(gpiopin, duration)))),
+        (r"/logout", LogoutHandler, dict(baseurl=baseurl)),
     ], cookie_secret=secret)
 
 
