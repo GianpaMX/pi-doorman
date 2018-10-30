@@ -5,7 +5,10 @@ import tornado.ioloop
 import tornado.web
 
 from core.check_pin_usecase import CheckPinUsecase
+from core.open_usecase import OpenUsecase
+from gateway.door_gateway import DoorGateway
 from login.login_handler import LoginHandler
+from open.open_handler import OpenHandler
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -17,13 +20,14 @@ class MainHandler(tornado.web.RequestHandler):
             self.redirect("/login")
             return
 
-        self.write("Hello, world")
+        self.redirect("/open")
 
 
-def make_app(secret, pins):
+def make_app(secret, pins, gpiopin, duration):
     return tornado.web.Application([
         (r"/", MainHandler),
         (r"/login", LoginHandler, dict(check_pin_usecase=CheckPinUsecase(pins))),
+        (r"/open", OpenHandler, dict(open_usecase=OpenUsecase(DoorGateway(gpiopin, duration)))),
     ], cookie_secret=secret)
 
 
@@ -42,7 +46,10 @@ if __name__ == "__main__":
     config.read(args.config)
 
     secret = config['doorman']['secret']
+    gpiopin = int(config['doorman']['gpiopin'])
+    duration = int(config['doorman']['duration'])
     pins = str.strip(config['doorman']['pins']).split("\n")
-    app = make_app(secret, pins)
+
+    app = make_app(secret, pins, gpiopin, duration)
     app.listen(config['doorman']['port'])
     tornado.ioloop.IOLoop.current().start()
