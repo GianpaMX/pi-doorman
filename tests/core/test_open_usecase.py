@@ -1,12 +1,12 @@
 from unittest import TestCase
-from unittest.mock import Mock
+from unittest.mock import MagicMock
 
 from core.open_usecase import OpenUsecase
 
 
 class TestOpenUsecase(TestCase):
     def setUp(self):
-        self.door_gateway = Mock()
+        self.door_gateway = MagicMock()
 
         self.usecase = OpenUsecase(self.door_gateway)
 
