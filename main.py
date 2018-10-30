@@ -12,22 +12,25 @@ from open.open_handler import OpenHandler
 
 
 class MainHandler(tornado.web.RequestHandler):
+    def initialize(self, baseurl):
+        self.baseurl = baseurl
+
     def get_current_user(self):
         return self.get_secure_cookie("pin")
 
     def get(self):
         if not self.current_user:
-            self.redirect("/login")
+            self.redirect("{}/login".format(self.baseurl))
             return
 
-        self.redirect("/open")
+        self.redirect("{}/open".format(self.baseurl))
 
 
-def make_app(secret, pins, gpiopin, duration):
+def make_app(baseurl, secret, pins, gpiopin, duration):
     return tornado.web.Application([
-        (r"/", MainHandler),
-        (r"/login", LoginHandler, dict(check_pin_usecase=CheckPinUsecase(pins))),
-        (r"/open", OpenHandler, dict(open_usecase=OpenUsecase(DoorGateway(gpiopin, duration)))),
+        (r"/", MainHandler, dict(baseurl=baseurl)),
+        (r"/login", LoginHandler, dict(baseurl=baseurl, check_pin_usecase=CheckPinUsecase(pins))),
+        (r"/open", OpenHandler, dict(baseurl=baseurl, open_usecase=OpenUsecase(DoorGateway(gpiopin, duration)))),
     ], cookie_secret=secret)
 
 
@@ -45,11 +48,12 @@ if __name__ == "__main__":
     )
     config.read(args.config)
 
+    baseurl = config['doorman']['baseurl']
     secret = config['doorman']['secret']
     gpiopin = int(config['doorman']['gpiopin'])
     duration = int(config['doorman']['duration'])
     pins = str.strip(config['doorman']['pins']).split("\n")
 
-    app = make_app(secret, pins, gpiopin, duration)
+    app = make_app(baseurl, secret, pins, gpiopin, duration)
     app.listen(config['doorman']['port'])
     tornado.ioloop.IOLoop.current().start()
