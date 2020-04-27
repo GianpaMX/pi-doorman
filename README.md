@@ -8,24 +8,20 @@ port.
 
 ### Setup
 
-1. (Optional) Install virtual environment
+1. (Optional) Install Pipenv
 ```
-$ pip install virtualenv
+$ pip install pipenv
 ```
 
-2. (Optional) Create a virtual environment with Python 3.7
+2. (Optional) Install dependencies
 ```
-$ virtualenv --python=python3.7 venv
+$ pipenv install
+$ pipenv install --dev
 ```
 
 3. (Optional) Activate your virtual enviroment
 ```
-source venv/bin/activate
-```
-
-2. Install dependencies using pip
-```
-(venv) $ pip install -r requirements.txt
+pipenv shell
 ```
 
 
@@ -38,20 +34,26 @@ Set the following properties:
 ```
 [doorman]
 # Url for redirections, this makes easy to put this behind a proxy and all 
-# rectiects are prefixed with this
-baseurl=http://localhost:8888/ 
+# redirects are prefixed with this
+baseurl=http://localhost:8888
 
-# Por where the application will be listening
+# Port where the application will be listening
 port=8888
 
 # Secret to encrypt cookies, keep it private 
 secret=SECRET_STRING
 
-# GIOP Pin where relay to open the door is connected
-gpiopin=4
+# GIOP Pin where the relay to open the latch is connected
+latch_pin=4
 
 # How long the relay should be pressed
-duration=1
+latch_release_duration=1
+
+# GIOP Ping where the bell is connected
+bell_pin=26
+
+# GIOP Ping where the bell button is connected
+door_button_pin=16
 
 # Valid pins
 pins=
@@ -63,5 +65,5 @@ pins=
 ### Run 
 
 ```
-(venv) $ python main.py -c ~/.pi-doorman
+(pi-doorman) $ python main.py -c ~/.pi-doorman
 ```
