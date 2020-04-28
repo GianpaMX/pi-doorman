@@ -1,9 +1,12 @@
+import logging
 import sched
 import threading
 from time import sleep
 from time import time
 
 from gpiozero import LED, Button
+
+log = logging.getLogger(__name__)
 
 
 class DoorGateway:
@@ -24,6 +27,7 @@ class DoorGateway:
 
         t = threading.Thread(target=self.scheduler.run)
         t.start()
+        log.info('started')
 
     def __when_door_button_pressed(self):
         self.flags |= 0x1
@@ -33,17 +37,22 @@ class DoorGateway:
             self.flags = 0x2
         elif self.flags & 0x2:
             self.flags = 0x0
+            log.info('__check_flag:when_door_button_pressed')
             if self.when_door_button_pressed is not None:
                 self.when_door_button_pressed()
 
         self.scheduler.enter(0.1, 1, self.__check_flag, (new_scheduler,))
 
     def open(self):
+        log.info('open:latch_off')
         self.latch.off()
         sleep(self.duration)
+        log.info('open:latch_on')
         self.latch.on()
 
     def ring_bell(self):
+        log.info('ring_bell:on')
         self.bell.on()
         sleep(2)
+        log.info('ring_bell:off')
         self.bell.off()

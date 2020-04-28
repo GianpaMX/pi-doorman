@@ -1,6 +1,8 @@
 import configparser
+import logging
 from argparse import ArgumentParser
 
+import os
 import tornado.ioloop
 import tornado.web
 
@@ -12,6 +14,9 @@ from login.login_handler import LoginHandler
 from logout.logout_handler import LogoutHandler
 from main.main_handler import MainHandler
 from open.open_handler import OpenHandler
+
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
+log = logging.getLogger(__name__)
 
 
 def get_arguments():
@@ -51,6 +56,8 @@ def make_app(baseurl,
              bell_pin,
              door_button_pin,
              port):
+    log.info("make_app")
+
     door_gateway = DoorGateway(latch_pin, latch_release_duration, bell_pin, door_button_pin)
 
     ring_bell_usecase = RingBellUsecase(door_gateway)
@@ -67,6 +74,8 @@ def make_app(baseurl,
          (r"/logout", LogoutHandler, dict(baseurl=baseurl)), ], cookie_secret=secret)
 
     app.listen(port)
+
+    log.info('make_app:listening in %s', port)
 
     return app
 

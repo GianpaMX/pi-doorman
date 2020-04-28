@@ -1,4 +1,8 @@
+import logging
+
 import tornado
+
+log = logging.getLogger(__name__)
 
 
 class OpenHandler(tornado.web.RequestHandler):
@@ -12,10 +16,12 @@ class OpenHandler(tornado.web.RequestHandler):
 
     def get(self):
         if not self.current_user:
+            log.info('get:not_logged_in')
             self.redirect("{}/login".format(self.baseurl))
             return
 
         if not self.check_pin_usecase.execute(self.current_user.decode()):
+            log.info('get:invalid_ping:%s', self.current_user.decode())
             self.clear_cookie("pin")
             self.redirect("{}/login".format(self.baseurl))
             return
@@ -24,6 +30,13 @@ class OpenHandler(tornado.web.RequestHandler):
 
     def post(self):
         if not self.current_user:
+            log.info('post:not_logged_in')
+            self.redirect("{}/login".format(self.baseurl))
+            return
+
+        if not self.check_pin_usecase.execute(self.current_user.decode()):
+            log.info('post:invalid_ping:%s', self.current_user.decode())
+            self.clear_cookie("pin")
             self.redirect("{}/login".format(self.baseurl))
             return
 
