@@ -2,14 +2,17 @@ import configparser
 import logging
 from argparse import ArgumentParser
 
+import firebase_admin
 import os
 import tornado.ioloop
 import tornado.web
+from firebase_admin import credentials
 
 from core.check_pin_usecase import CheckPinUsecase
 from core.open_usecase import OpenUsecase
 from core.ring_bell_usecase import RingBellUsecase
 from gateway.door_gateway import DoorGateway
+from gateway.notification_gateway import NotificationGateway
 from login.login_handler import LoginHandler
 from logout.logout_handler import LogoutHandler
 from main.main_handler import MainHandler
@@ -45,6 +48,8 @@ def read_config(config):
             int(config['doorman']['latch_release_duration']),
             int(config['doorman']['bell_pin']),
             int(config['doorman']['door_button_pin']),
+            config['doorman']['service_account_keys_path'],
+            config['doorman']['token'],
             config['doorman']['port'])
 
 
@@ -55,12 +60,19 @@ def make_app(baseurl,
              latch_release_duration,
              bell_pin,
              door_button_pin,
+             service_account_keys_path,
+             token,
              port):
     log.info("make_app")
 
     door_gateway = DoorGateway(latch_pin, latch_release_duration, bell_pin, door_button_pin)
 
-    ring_bell_usecase = RingBellUsecase(door_gateway)
+    cred = credentials.Certificate(service_account_keys_path)
+    firebase_app = firebase_admin.initialize_app(cred)
+
+    notification_gateway = NotificationGateway(firebase_app)
+
+    ring_bell_usecase = RingBellUsecase(door_gateway, notification_gateway, token)
 
     door_gateway.when_door_button_pressed = ring_bell_usecase.execute
 

@@ -12,6 +12,7 @@ pigpio = "*"
 [packages]
 tornado = "*"
 gpiozero = "*"
+firebase-admin = "*"
 
 [requires]
 python_version = "3.6"

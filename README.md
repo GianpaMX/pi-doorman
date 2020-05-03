@@ -55,6 +55,13 @@ bell_pin=26
 # GIOP Ping where the bell button is connected
 door_button_pin=16
 
+# Account Keys file that you get from Firebase console
+service_account_keys_path=~/.pi-doorman-firebase-keys
+
+# Your device token obtained after 
+# FirebaseInstanceId.getInstance().getInstanceId()
+token=firebase-token
+
 # Valid pins
 pins=
 	123 # You can defines
